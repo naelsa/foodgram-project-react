@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import EmailValidator, RegexValidator
 from django.db import models
 from django.db.models import F, Model, Q
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     """Кастомный пользователь с дополнительными полями."""
     email = models.EmailField(
         validators=(EmailValidator,),
@@ -55,17 +54,12 @@ class CustomUser(AbstractUser):
         return self.email
 
     @property
-    def is_admin(self):
-        return self.role == settings.USER_ROLE_ADMIN or self.is_staff
-
-    @property
     def is_user(self):
         return self.role == settings.USER_ROLE_USER
 
 
 class Subscribe(Model):
     """Подписка"""
-    User = get_user_model()
     user = models.ForeignKey(
         User,
         related_name='followers',

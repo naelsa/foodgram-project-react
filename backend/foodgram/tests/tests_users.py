@@ -7,9 +7,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram.settings')
 application = get_wsgi_application()
 
 from pprint import pprint
+
+from rest_framework import status
 # from django.urls import reverse
 from rest_framework.test import APITestCase
-from rest_framework import status
+
 # from django.contrib.auth.models import User
 # from .models import CustomUser
 

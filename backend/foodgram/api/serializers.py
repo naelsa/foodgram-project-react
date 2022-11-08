@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.serializers import (CharField, IntegerField,
@@ -8,13 +7,10 @@ from rest_framework.serializers import (CharField, IntegerField,
                                         StringRelatedField, ValidationError)
 from rest_framework.validators import UniqueTogetherValidator
 
+from .mixins import CreatePopItems, IsSubscribed, RepresentationMixin
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
-from users.models import Subscribe
-
-from .mixins import CreatePopItems, IsSubscribed, RepresentationMixin
-
-User = get_user_model()
+from users.models import Subscribe, User
 
 
 class CustomUserSerializer(UserSerializer, IsSubscribed):
@@ -93,7 +89,7 @@ class RecipeObtainSerializer(ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = SerializerMethodField(read_only=True)
-    is_favourited = SerializerMethodField(read_only=True)
+    is_favorited = SerializerMethodField(read_only=True)
     is_in_shopping_cart = SerializerMethodField(read_only=True)
 
     class Meta:
@@ -103,7 +99,7 @@ class RecipeObtainSerializer(ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favourited',
+            'is_favorited',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -117,17 +113,15 @@ class RecipeObtainSerializer(ModelSerializer):
 
     def get_is_favourited(self, obj):
         request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
+        if not request or request.is_anonymous:
             return False
-        return Favorite.objects.filter(user=request.user, recipe=obj).exists()
+        return request.user.favourites.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
+        if not request or request.is_anonymous:
             return False
-        return ShoppingCart.objects.filter(
-            user=request.user, recipe=obj
-        ).exists()
+        return request.user.purchases.filter(recipe=obj).exists()
 
 
 class IngredientInRecipeCreateSerializer(ModelSerializer):
@@ -161,13 +155,23 @@ class RecipeCreateSerializer(RepresentationMixin, CreatePopItems):
         )
 
     def validate(self, data):
+        ingredients = data.get('ingredients')
+        if not ingredients:
+            raise ValidationError({
+                'ingredients': 'Нужен хоть один ингридиент для рецепта'})
+        # TODO: вынести ошибки в отдельный файл
         unique_ingredients = []
-        for ingredient in data.get('ingredients'):
+        for ingredient in ingredients:
             if ingredient['id'] in unique_ingredients:
                 raise ValidationError({
                     'ingredients': 'Ингредиенты не должны повторяться'
                 })
             unique_ingredients.append(ingredient['id'])
+            if int(ingredient['amount']) < 0:
+                raise ValidationError({
+                    'ingredients': ('Убедитесь, что значение количества '
+                                    'ингредиента больше 0')
+                })
 
         tags = data.get('tags')
         if not tags:
@@ -177,6 +181,12 @@ class RecipeCreateSerializer(RepresentationMixin, CreatePopItems):
             if tag in unique_tags:
                 raise ValidationError({'tags': 'Тэги должны быть уникальными'})
             unique_tags.append(tag)
+
+        cooking_time = data.get('cooking_time')
+        if int(cooking_time) <= 0:
+            raise ValidationError({
+                'cooking_time': 'Время приготовления должно быть больше 0'})
+
         return data
 
     def create(self, validated_data):
@@ -246,10 +256,10 @@ class SubscriptionsSerializer(ModelSerializer, IsSubscribed):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
+        if not request or request.is_anonymous:
             return False
         recipes_limit = request.query_params.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj)
+        queryset = recipes_limit.user.followers.filter(author=obj)
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
         return RecipeSerializer(queryset, many=True).data

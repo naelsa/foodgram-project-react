@@ -8,11 +8,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='8rnz^c=-cy#%-ew95zot35nl20_amjosids54d9bvjahtj8x$b')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', default=True)
 
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='*'), ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [os.getenv(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost http://127.0.0.1',
+)]
 
 
 INSTALLED_APPS = [
@@ -98,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'ru-ru'
 
@@ -121,7 +124,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -146,9 +149,7 @@ DJOSER = {
 }
 
 USER_ROLE_USER = 'user'
-USER_ROLE_ADMIN = 'admin'
-USER_ROLE_CHOICES = ((USER_ROLE_USER, 'Пользователь'),
-                     (USER_ROLE_ADMIN, 'Админ'),)
+USER_ROLE_CHOICES = ((USER_ROLE_USER, 'Пользователь'),)
 
 MAX_LENGTH_EMAIL = 254
 MAX_LENGTH_USER = 150
@@ -162,3 +163,6 @@ RECIPE_NAME_LENGTH = 200
 INGREDIENT = 0
 AMOUNT = 2
 MEASUREMENT_UNIT = 1
+CONTENT_TYPE = 'text/plain'
+CONTENT_DISPOSITION = 'attachment; filename=Purchases.txt'
+

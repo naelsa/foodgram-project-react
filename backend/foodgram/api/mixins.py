@@ -36,11 +36,9 @@ class IsSubscribed:
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
+        if not request or request.user.is_anonymous:
             return False
-        return Subscribe.objects.filter(
-            user=request.user, author=obj.id
-        ).exists()
+        return request.user.followers.filter(author=obj).exists()
 
 
 class CreatePopItems:

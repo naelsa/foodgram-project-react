@@ -9,6 +9,11 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'color', 'slug',)
 
 
+class TagInline(admin.TabularInline):
+    model = Recipe.tags.through
+    extra = 0
+
+
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit',)
@@ -29,6 +34,11 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='В избранном')
     def count_favourites(self, obj):
         return obj.favourites.count()
+
+
+class IngredientInline(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 0
 
 
 @admin.register(ShoppingCart)

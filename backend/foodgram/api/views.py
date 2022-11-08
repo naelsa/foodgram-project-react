@@ -9,10 +9,6 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
-                            ShoppingCart, Tag)
-from users.models import Subscribe
-
 from .filters import IngredientFilter, RecipeFilter
 from .mixins import CreateDestroy
 from .pagination import CustomPagination
@@ -23,6 +19,9 @@ from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           ShoppingCartSerializer, SubscribeSerializer,
                           SubscriptionsSerializer, TagSerializer, User)
 from .utils import create_shopping_cart_txt
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
+from users.models import Subscribe
 
 
 class CustomUserViewSet(UserViewSet):
@@ -65,11 +64,10 @@ class CustomUserViewSet(UserViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        ['post', 'delete'], detail=True, permission_classes=[IsAuthenticated])
-    def subscribe(self, request, id):
-        user = request.user
-        author = get_object_or_404(User, id=id)
+        ['post'], detail=True, permission_classes=[IsAuthenticated])
+    def subscribe(self, request, id=None):
         if request.method == 'POST':
+            user = request.user
             data = {'user': user.id, 'author': id}
             serializer = SubscribeSerializer(
                 data=data,
@@ -78,7 +76,16 @@ class CustomUserViewSet(UserViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=HTTP_201_CREATED)
+
+    @subscribe.mapping.delete
+    def del_subscribe(self, request, id=None):
+        user = request.user
+        author = get_object_or_404(User, id=id)
         follow = Subscribe.objects.filter(user=user, author=author)
+        if user == author:
+            return Response({
+                'errors': 'Вы не можете отписываться от самого себя'
+            }, status=status.HTTP_400_BAD_REQUEST)
         if follow.exists():
             follow.delete()
             return Response(status=HTTP_204_NO_CONTENT)
