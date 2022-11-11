@@ -53,10 +53,6 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return self.email
 
-    @property
-    def is_user(self):
-        return self.role == settings.USER_ROLE_USER
-
 
 class Subscribe(Model):
     """Подписка"""

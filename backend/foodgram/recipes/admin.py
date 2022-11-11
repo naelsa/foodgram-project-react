@@ -22,23 +22,34 @@ class IngredientAdmin(admin.ModelAdmin):
 
 class IngredientInRecipeInline(admin.TabularInline):
     model = IngredientInRecipe
-    extra = 1
-
-
-@admin.register(Recipe)
-class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'author', 'count_favourites')
-    list_filter = ('author', 'name', 'tags',)
-    inlines = [IngredientInRecipeInline]
-
-    @admin.display(description='В избранном')
-    def count_favourites(self, obj):
-        return obj.favourites.count()
+    extra = 0
 
 
 class IngredientInline(admin.TabularInline):
     model = Recipe.ingredients.through
     extra = 0
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'author',
+                    'ingredient_name', 'tag_name', 'count_favourites')
+    list_filter = ('author', 'name', 'tags',)
+    inlines = [IngredientInRecipeInline, TagInline]
+
+    @admin.display(description='В избранном')
+    def count_favourites(self, obj):
+        return obj.favourites.count()
+
+    @admin.display(description='Ингредиенты')
+    def ingredient_name(self, obj):
+        return " %s" % (', '.join(
+            [obj.ingredient.name for obj.ingredient in obj.ingredients.all()]))
+
+    @admin.display(description='Тэги')
+    def tag_name(self, obj):
+        return " %s" % (', '.join(
+            [obj.tag.name for obj.tag in obj.tags.all()]))
 
 
 @admin.register(ShoppingCart)

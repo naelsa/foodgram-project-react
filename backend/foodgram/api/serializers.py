@@ -111,15 +111,15 @@ class RecipeObtainSerializer(ModelSerializer):
         queryset = IngredientInRecipe.objects.filter(recipe=obj)
         return IngredientInRecipeObtainSerializer(queryset, many=True).data
 
-    def get_is_favourited(self, obj):
+    def get_is_favorited(self, obj):
         request = self.context.get('request')
-        if not request or request.is_anonymous:
+        if not request or request.user.is_anonymous:
             return False
         return request.user.favourites.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
-        if not request or request.is_anonymous:
+        if not request or request.user.is_anonymous:
             return False
         return request.user.purchases.filter(recipe=obj).exists()
 
@@ -256,7 +256,7 @@ class SubscriptionsSerializer(ModelSerializer, IsSubscribed):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        if not request or request.is_anonymous:
+        if not request or request.user.is_anonymous:
             return False
         recipes_limit = request.query_params.get('recipes_limit')
         queryset = recipes_limit.user.followers.filter(author=obj)

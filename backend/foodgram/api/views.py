@@ -5,8 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
-                                   HTTP_400_BAD_REQUEST)
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .filters import IngredientFilter, RecipeFilter
@@ -79,20 +78,11 @@ class CustomUserViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def del_subscribe(self, request, id=None):
-        user = request.user
-        author = get_object_or_404(User, id=id)
-        follow = Subscribe.objects.filter(user=user, author=author)
-        if user == author:
-            return Response({
-                'errors': 'Вы не можете отписываться от самого себя'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        if follow.exists():
-            follow.delete()
-            return Response(status=HTTP_204_NO_CONTENT)
-        return Response(
-            {'error': 'Вы не подписаны на этого автора'},
-            status=HTTP_400_BAD_REQUEST
+        follow = get_object_or_404(
+            Subscribe, user=request.user, author__id=id
         )
+        follow.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
