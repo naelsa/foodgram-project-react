@@ -50,17 +50,15 @@ jobs:
         with:
           no_cache: true
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
           context: ./backend/foodgram/
-          file: Dockerfile
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
       - name: Push frontend to Docker Hub
         uses: docker/build-push-action@v2
         with:
           no_cache: true
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
           context: ./frontend
-          file: Dockerfile
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
