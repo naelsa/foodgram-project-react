@@ -65,16 +65,17 @@ class CustomUserViewSet(UserViewSet):
     @action(
         ['post'], detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
+        following = get_object_or_404(User, id=id)
+        subscription = self.request.user.followers.filter(author=following)
         if request.method == 'POST':
-            user = request.user
-            data = {'user': user.id, 'author': id}
-            serializer = SubscribeSerializer(
-                data=data,
-                context={'request': request},
+            subscription = Subscribe.objects.create(
+                user=self.request.user, author=following
             )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=HTTP_201_CREATED)
+            serializer = SubscribeSerializer(subscription)
+            return Response(
+                serializer.data,
+                status=HTTP_201_CREATED
+            )
 
     @subscribe.mapping.delete
     def del_subscribe(self, request, id=None):
@@ -128,20 +129,10 @@ class RecipeViewSet(CreateDestroy):
         return self._post_method_for_actions(
             request=request, pk=pk, serializers=FavoriteSerializer)
 
-    @favorite.mapping.delete
-    def delete_favorite(self, request, pk):
-        return self._delete_method_for_actions(
-            request=request, pk=pk, model=Favorite)
-
     @action(detail=True, methods=["POST"])
     def shopping_cart(self, request, pk):
         return self._post_method_for_actions(
             request=request, pk=pk, serializers=ShoppingCartSerializer)
-
-    @shopping_cart.mapping.delete
-    def delete_shopping_cart(self, request, pk):
-        return self._delete_method_for_actions(
-            request=request, pk=pk, model=ShoppingCart)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
@@ -154,3 +145,13 @@ class RecipeViewSet(CreateDestroy):
             .annotate(Sum('amount'))
         )
         return create_shopping_cart_txt(ingredients)
+
+
+class FavoriteViewSet(CreateDestroy):
+    serializer_class = FavoriteSerializer
+    model_class = Favorite
+
+
+class PurchaseListView(CreateDestroy):
+    serializer_class = ShoppingCartSerializer
+    model_class = ShoppingCart

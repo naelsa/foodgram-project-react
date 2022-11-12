@@ -8,13 +8,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='8rnz^c=-cy#%-ew95zot35nl20_amjosids54d9bvjahtj8x$b')
 
-DEBUG = os.getenv('DEBUG', default=True)
+DEBUG = os.getenv('DEBUG', default=False)
 
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='*'), ]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='51.250.77.133'), ]
 
 CSRF_TRUSTED_ORIGINS = [os.getenv(
     'CSRF_TRUSTED_ORIGINS',
-    default='http://localhost http://127.0.0.1',
+    default='http://localhost http://127.0.0.1 http://51.250.77.133',
 )]
 
 
@@ -165,4 +165,3 @@ AMOUNT = 2
 MEASUREMENT_UNIT = 1
 CONTENT_TYPE = 'text/plain'
 CONTENT_DISPOSITION = 'attachment; filename=Purchases.txt'
-

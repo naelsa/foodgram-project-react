@@ -39,4 +39,3 @@ class RecipeFilter(FilterSet):
         if not value:
             queryset
         return queryset.filter(purchases__user=self.request.user)
-

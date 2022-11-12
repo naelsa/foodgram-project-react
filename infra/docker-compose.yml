@@ -2,9 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: naelsa/foodgram_frontend:latest
     volumes:
       - ./frontend/:/app/result_build/
 
@@ -16,9 +14,7 @@ services:
       - ./.env
 
   backend:
-    build:
-      context: ../backend/foodgram
-      dockerfile: Dockerfile
+    image: naelsa/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -33,14 +29,24 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - backend
+  certbot:
+    image: certbot/certbot
+    restart: always
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
 
 volumes:
   static_value:

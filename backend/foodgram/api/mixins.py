@@ -1,8 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
-from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
-                                   HTTP_400_BAD_REQUEST)
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.viewsets import ModelViewSet
 
 from recipes.models import IngredientInRecipe, Recipe
@@ -11,6 +10,7 @@ from users.models import Subscribe
 
 class CreateDestroy(ModelViewSet):
     """Вьюсет, содержащий методы для создания и удаления экземпляров класса."""
+    model_class = None
 
     def _post_method_for_actions(self, request, pk, serializers):
         data = {'user': request.user.id, 'recipe': pk}
@@ -19,15 +19,13 @@ class CreateDestroy(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=HTTP_201_CREATED)
 
-    def _delete_method_for_actions(self, request, pk, model):
-        user = request.user
+    def _delete_method_for_actions(self, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
-        model_obj = model.objects.filter(user=user, recipe=recipe)
-        if model_obj.exists():
-            model_obj.delete()
-            return Response(status=HTTP_204_NO_CONTENT)
+        model_obj = get_object_or_404(
+            self.model_class, user=request.user, recipe=recipe)
+        model_obj.delete()
         return Response(
-            {'error': 'Этого рецепта нет у вас'}, status=HTTP_400_BAD_REQUEST)
+            "Рецепт удален из избранного", status=HTTP_204_NO_CONTENT)
 
 
 class IsSubscribed:
