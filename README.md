@@ -1,3 +1,7 @@
+[![foodgram CI](https://github.com/naelsa/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master)](https://github.com/naelsa/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
+
+____
+
 # FOODGRAM - Незаменимый продуктовый помощник для любой хозяйки.
 ___
 Сервис для обмена вашимих любимых рецептов на любимые рецепты других пользователей.

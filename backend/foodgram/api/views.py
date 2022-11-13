@@ -81,10 +81,9 @@ class CustomUserViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def del_subscribe(self, request, id=None):
-        follow = get_object_or_404(
+        get_object_or_404(
             Subscribe, user=request.user, author__id=id
-        )
-        follow.delete()
+        ).delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
