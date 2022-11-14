@@ -9,6 +9,9 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
                                    HTTP_400_BAD_REQUEST)
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
+from users.models import Subscribe
 from .filters import IngredientFilter, RecipeFilter
 from .mixins import CreateDestroy
 from .pagination import CustomPagination
@@ -19,9 +22,6 @@ from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           ShoppingCartSerializer, SubscribeSerializer,
                           SubscriptionsSerializer, TagSerializer, User)
 from .utils import create_shopping_cart_txt
-from users.models import Subscribe
-from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
-                            ShoppingCart, Tag)
 
 
 class CustomUserViewSet(UserViewSet):
