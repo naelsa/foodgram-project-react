@@ -1,15 +1,15 @@
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
-                            ShoppingCart, Tag)
 from rest_framework.serializers import (CharField, IntegerField,
                                         ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
                                         StringRelatedField, ValidationError)
 from rest_framework.validators import UniqueTogetherValidator
-from users.models import Subscribe, User
 
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
+from users.models import Subscribe, User
 from .mixins import CreatePopItems, IsSubscribed, RepresentationMixin
 
 
