@@ -10,11 +10,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='8rnz^c=-cy#%-ew95zot35nl20_amjosid
 
 DEBUG = os.getenv('DEBUG', default=False)
 
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='178.154.205.117'), ]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='51.250.77.133'), ]
 
 CSRF_TRUSTED_ORIGINS = [os.getenv(
     'CSRF_TRUSTED_ORIGINS',
-    default='http://localhost http://127.0.0.1 http://178.154.205.117',
+    default='http://localhost http://127.0.0.1 http://51.250.77.133',
 )]
 
 
