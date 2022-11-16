@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:13.0-alpine
     volumes:
-      - db_value:/var/lib/docker/volumes/db_data/
+      - db_value:/var/lib/postgresql/data/
     env_file:
       - ./.env
 
@@ -12,8 +12,8 @@ services:
     image: naelsa/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - static_value:/backend/static/
+      - media_value:/backend/media/
     depends_on:
       - db
     env_file:
@@ -22,7 +22,7 @@ services:
   frontend:
     image: naelsa/foodgram_frontend:latest
     volumes:
-      - ./frontend/:/app/result_build/
+      - ../frontend/:/app/result_build/
 
   nginx:
     image: nginx:1.19.3
