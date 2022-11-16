@@ -2,15 +2,15 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='8rnz^c=-cy#%-ew95zot35nl20_amjosids54d9bvjahtj8x$b')
 
 DEBUG = os.getenv('DEBUG', default=True)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default=['*'])
+ALLOWED_HOSTS = ['51.250.11.237']
 
 # CSRF_TRUSTED_ORIGINS = [os.getenv(
 #     'CSRF_TRUSTED_ORIGINS',
