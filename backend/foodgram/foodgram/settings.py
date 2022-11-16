@@ -14,7 +14,7 @@ ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='*'), ]
 
 CSRF_TRUSTED_ORIGINS = [os.getenv(
     'CSRF_TRUSTED_ORIGINS',
-    default='http://localhost http://127.0.0.1 http://51.250.77.133',
+    default='http://localhost http://127.0.0.1 http://51.250.11.237',
 )]
 
 
