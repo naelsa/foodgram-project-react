@@ -125,7 +125,6 @@ class RecipeViewSet(CreateDestroy):
         model_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
     def get_serializer_class(self):
         if self.action == 'get':
             return RecipeObtainSerializer
