@@ -19,13 +19,12 @@ class CreateDestroy(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=HTTP_201_CREATED)
 
-    def _delete_method_for_actions(self, request, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
-        model_obj = get_object_or_404(
-            self.model_class, user=request.user, recipe=recipe)
-        model_obj.delete()
-        return Response(
-            "Рецепт удален из избранного", status=HTTP_204_NO_CONTENT)
+    # def _delete_method_for_actions(self, request, pk):
+    #     recipe = get_object_or_404(Recipe, id=pk)
+    #     model_obj = get_object_or_404(
+    #         self.model_class, user=request.user, recipe=recipe)
+    #     model_obj.delete()
+    #     return Response(status=HTTP_204_NO_CONTENT)
 
 
 class IsSubscribed:
