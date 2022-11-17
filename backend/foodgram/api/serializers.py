@@ -262,7 +262,7 @@ class SubscriptionsSerializer(ModelSerializer, IsSubscribed):
         if not request or request.user.is_anonymous:
             return False
         recipes_limit = request.query_params.get('recipes_limit')
-        queryset = recipes_limit.user.followers.filter(author=obj)
+        queryset = obj.recipes.all()
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
         return RecipeSerializer(queryset, many=True).data
